@@ -1,0 +1,6 @@
+gradio>=4.44.0
+yt-dlp>=2024.8.0
+faster-whisper>=1.0.3
+deep-translator>=1.11.4
+translators>=5.9.0
+edge-tts>=6.1.12
