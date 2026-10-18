@@ -22,21 +22,14 @@ _model_cache: dict[str, WhisperModel] = {}
 
 
 def _get_model(model_size: str) -> WhisperModel:
+    """Load Whisper on CPU only (avoids broken/missing CUDA installs)."""
     if model_size not in _model_cache:
-        last_err: Exception | None = None
-        for device, compute_type in (
-            ("cuda", "float16"),
-            ("cpu", "int8"),
-        ):
-            try:
-                _model_cache[model_size] = WhisperModel(
-                    model_size, device=device, compute_type=compute_type
-                )
-                break
-            except Exception as exc:  # noqa: BLE001
-                last_err = exc
-        else:
-            raise RuntimeError(f"Не удалось загрузить Whisper ({model_size}): {last_err}")
+        try:
+            _model_cache[model_size] = WhisperModel(
+                model_size, device="cpu", compute_type="int8"
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise RuntimeError(f"Не удалось загрузить Whisper ({model_size}): {exc}") from exc
     return _model_cache[model_size]
 
 
